@@ -1,0 +1,106 @@
+<body></body>
+<script src="three.min.js"></script>
+<script src="OrbitControls.js"></script>
+<script>
+//==========基本设定==========
+const scene=new THREE.Scene();
+const renderer=new THREE.WebGLRenderer();
+document.body.appendChild(renderer.domElement);
+renderer.gammaFactor=2.2;
+renderer.gammaOutput=true;
+renderer.shadowMap.enabled=true;
+const camera=new THREE.PerspectiveCamera(45,1,.01,10000);
+camera.position.set(6,9,12);
+camera.lookAt(0,0,0);
+function resize(){
+    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setDrawingBufferSize(window.innerWidth/2, window.innerHeight/2,window.devicePixelRatio);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+}
+resize();
+window.addEventListener("resize",resize);
+//==========主循环==========
+const clock=new THREE.Clock();
+const updates=[];
+function loop(){
+    let dt=clock.getDelta();
+    for(let handler of updates)handler(dt);
+    renderer.render(scene,camera);
+}
+renderer.setAnimationLoop(loop);
+//==========插件==========
+const controls=new THREE.OrbitControls(camera,renderer.domElement);
+controls.mouseButtons={LEFT:THREE.MOUSE.RIGHT,MIDDLE:null,RIGHT:THREE.MOUSE.MIDDLE};
+controls.screenSpacePanning=false;
+updates.push(dt=>controls.update());
+//==========创建场景==========
+scene.background=new THREE.Color(0x443355);
+const skyLight=new THREE.HemisphereLight(0x6666aa,0x443322);
+const light=new THREE.DirectionalLight(0xeeddcc);
+light.castShadow=true;
+light.position.set(8,20,12);
+light.shadow.camera.left=light.shadow.camera.bottom=-35;
+light.shadow.camera.right=light.shadow.camera.top=35;
+//scene.add(new THREE.CameraHelper(light.shadow.camera));
+scene.add(skyLight);
+scene.add(light);
+scene.add(new THREE.GridHelper(10,10).translateY(-.001));
+scene.add(new THREE.AxesHelper(5));
+
+
+
+
+let red=new THREE.MeshStandardMaterial({color:0xdd4433});
+let green=new THREE.MeshStandardMaterial({color:0x117733});
+let white=new THREE.MeshStandardMaterial({color:0xbbaacc});
+let black=new THREE.MeshStandardMaterial({color:0x010402});
+let boxMesh=new THREE.BoxGeometry(1,1,1);
+function box(cx,cy,cz,sx,sy,sz,mat){
+    let mesh=new THREE.Mesh(boxMesh,mat)
+    mesh.scale.set(sx,sy,sz)
+    mesh.position.set(cx,cy,cz)
+    return mesh
+}
+function player(){
+    let group=new THREE.Group()
+    //机身
+    group.add(box(0,0,0,.5,.7,2,red))
+    group.add(box(0,.1,1.5,.5,.5,1.5,red))
+    //翅膀
+    group.add(box(0,1,0,4,.1,1.2,red))
+    group.add(box(0,.2,0,4,.1,1.2,red))
+    //尾翼
+    group.add(box(0,.2,2,1.5,.1,.6,red))
+    group.add(box(0,.5,2,.1,.8,.4,red))
+    //螺旋桨
+    group.add(box(0,0,-1.1,.7,.2,.1,white).rotateZ(.8))
+    group.add(box(0,0,-1.1,.7,.2,.1,white).rotateZ(-.8))
+    //装饰
+    group.add(box(1.9,.6,.4,.05,1,.05,white))
+    group.add(box(1.9,.6,-.4,.05,1,.05,white))
+    group.add(box(-1.9,.6,.4,.05,1,.05,white))
+    group.add(box(-1.9,.6,-.4,.05,1,.05,white))
+    group.add(box(0.25,.6,-.4,.05,1,.05,white))
+    group.add(box(-0.25,.6,-.4,.05,1,.05,white))
+    return group
+}
+function enemy(){
+    let group=new THREE.Group()
+    //机身
+    group.add(box(1,0,1,.5,.7,4,green))
+    group.add(box(-1,0,1,.5,.7,4,green))
+    //翅膀
+    group.add(box(0,.2,0,6,.1,1.2,green))
+    group.add(box(0,.2,-.2,6.1,.2,.1,black))
+    //尾翼
+    group.add(box(0,.2,3,4,.1,.6,green))
+    group.add(box(2,.3,3,.1,.5,.4,black))
+    group.add(box(-2,.3,3,.1,.5,.4,black))
+    return group
+}
+scene.add(enemy())
+scene.add(player())
+
+</script>

@@ -1,0 +1,88 @@
+<style>body {margin: 0;overflow: hidden;}</style>
+<body></body>
+<script src="lib/three.min.js"></script>
+<script src="lib/OrbitControls.js"></script>
+<script src="lib/GLTFLoader.js"></script>
+<script src="lib/stats.min.js"></script>
+<script src="lib/dat.gui.min.js"></script>
+<script>
+
+//==========基本设定==========
+const scene=new THREE.Scene()
+const renderer=new THREE.WebGLRenderer()
+const camera=new THREE.PerspectiveCamera(45,2)
+document.body.appendChild(renderer.domElement)
+camera.position.set(6,9,12)
+camera.lookAt(0,0,0)
+function resize(){
+    renderer.setPixelRatio( window.devicePixelRatio )
+    renderer.setSize(window.innerWidth, window.innerHeight)
+    renderer.setDrawingBufferSize(window.innerWidth, window.innerHeight,window.devicePixelRatio)
+    camera.aspect = window.innerWidth / window.innerHeight
+    camera.updateProjectionMatrix()
+}
+resize()
+window.addEventListener("resize",resize)
+
+
+//==========主循环==========
+const clock=new THREE.Clock()
+function loop(){
+    let dt=clock.getDelta()
+    stats.update()
+    controls.update()
+    mesh.rotateX(dt*options.转速)
+    renderer.render(scene,camera)
+}
+renderer.setAnimationLoop(loop)
+
+
+//==========光照==========
+scene.background=new THREE.Color(0x443355)
+const skyLight=new THREE.HemisphereLight(0x6666aa,0x443322);
+const light=new THREE.DirectionalLight(0xeeddcc);
+light.position.set(8,20,12)
+scene.add(skyLight);
+scene.add(light);
+light.castShadow=true
+renderer.shadowMap.enabled=true
+light.shadow.camera.left=light.shadow.camera.bottom=-35;
+light.shadow.camera.right=light.shadow.camera.top=35;
+
+scene.add(new THREE.GridHelper(10,10))
+scene.add(new THREE.AxesHelper(5))
+
+
+//==========插件==========
+const stats=new Stats()
+document.body.appendChild(stats.dom)
+const controls=new THREE.OrbitControls(camera,renderer.domElement)
+controls.screenSpacePanning=true
+const options={"转速":1}
+const panel=new dat.GUI()
+panel.add(options,"转速",-2,2)
+
+
+//==========场景==========
+const material=new THREE.MeshLambertMaterial(0x11aa11)
+let textureLoader=new THREE.TextureLoader()
+let texture= textureLoader.load("gltf/texture.jpg")
+material.map=texture
+
+const geometry=new THREE.CubeGeometry(1,1,1)
+const mesh=new THREE.Mesh(geometry,material)
+mesh.position.set(5,0,0)
+scene.add(mesh)
+
+
+const loader=new THREE.GLTFLoader()
+function loadDone(data){
+    let mesh=data.scene.children[0]
+    mesh.scale.set(0.1,0.1,0.1)
+    scene.add(data.scene)
+}
+
+loader.load("gltf/parrot.gltf", loadDone)
+
+
+</script>

@@ -1,0 +1,22 @@
+<body></body>
+<script src="https://threejs.org/build/three.js"></script>
+<script>
+
+const scene=new THREE.Scene()
+const renderer=new THREE.WebGLRenderer()
+document.body.appendChild(renderer.domElement)
+const camera=new THREE.PerspectiveCamera(45,2)
+const material=new THREE.MeshLambertMaterial()
+const shape=new THREE.TorusKnotGeometry()
+const object=new THREE.Mesh(shape,material)
+object.position.set(0,0,-5)
+scene.add(object)
+const light=new THREE.PointLight()
+scene.add(light)
+function loop(){
+    object.rotateY(0.05)
+    renderer.render(scene,camera)
+}
+renderer.setAnimationLoop(loop)
+
+</script>

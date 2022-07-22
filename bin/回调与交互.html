@@ -1,0 +1,25 @@
+<body></body>                                   <!--这是一个基本的网页-->
+<script src="three.min.js"></script>
+                                                <!--加载Threejs库-->
+<script>                                        //请在这里开始你的表演
+                                                //两条横杠后面的内容是写给人看的注释，会被电脑忽略
+let renderer=new THREE.WebGLRenderer()          //创建一个视口
+document.body.appendChild(renderer.domElement)  //将视口加到网页里面
+let camera=new THREE.PerspectiveCamera(45,2)    //创建一个摄像机用来观察虚拟的3D场景
+let scene=new THREE.Scene()                     //这是我们的场景，待会我们可以往里面放东西
+let material=new THREE.MeshLambertMaterial(0x11aa11)
+                                                //我们创建一个绿色的材质
+let geometry=new THREE.CubeGeometry(1,1,1)      //这个变量表示一个1x1x1的立方体
+let mesh=new THREE.Mesh(geometry,material)      //指定了材质和外形，我们可以创造一个3D物体了
+scene.add(mesh)                                 //把绿色方块放到场景里面去
+mesh.position.set(0,0,-5)                       //方块的位置
+                                                //默认的坐标是x右y上z后
+
+let light=new THREE.PointLight()                //要有光
+scene.add(light)                                //把光也放到场景里
+function loop(){                                //这里是主循环
+    mesh.rotateY(0.05)                          //简单的动画效果
+    renderer.render(scene,camera)               //渲染场景
+}
+renderer.setAnimationLoop(loop)                 //让loop每隔一段时间自动执行一次
+</script>

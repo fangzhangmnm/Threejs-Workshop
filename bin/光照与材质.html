@@ -1,0 +1,24 @@
+<body></body>
+<script src="three.min.js"></script>
+<script>
+let renderer=new THREE.WebGLRenderer()
+document.body.appendChild(renderer.domElement)
+let camera=new THREE.PerspectiveCamera(45,2)
+let scene=new THREE.Scene()
+let material=new THREE.MeshLambertMaterial(0x11aa11)
+let geometry=new THREE.CubeGeometry(1,1,1)
+let mesh=new THREE.Mesh(geometry,material)
+scene.add(mesh)
+mesh.position.set(0,0,-5)
+let light=new THREE.PointLight()
+scene.add(light)
+function loop(){
+    renderer.render(scene,camera)
+}
+renderer.setAnimationLoop(loop)
+
+let material1=
+
+
+
+</script>
